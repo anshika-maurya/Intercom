@@ -1,0 +1,422 @@
+import React, { useState, useEffect, useRef } from 'react';
+import RefundSources from './RefundSources';
+import FormattingToolbar from './FormattingToolbar';
+
+const NumberedIcon = ({ number, onClick }) => (
+  <button 
+    onClick={onClick}
+    className="inline-flex items-center justify-center w-5 h-5 bg-indigo-600 rounded-full text-white text-xs font-bold ml-1"
+  >
+    {number}
+  </button>
+);
+
+const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
+  return (
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-30" onClick={onClose}>
+      <div 
+        className="bg-white border shadow-lg rounded-lg m-4 max-w-md w-full max-h-[80vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded">
+                Public article
+              </div>
+              <span className="text-xs text-gray-500">Amy Adams • 1d ago</span>
+            </div>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          
+          <div>
+            <h4 className="font-medium">{title}</h4>
+            <p className="text-sm text-gray-600 mt-2">
+              {content}
+            </p>
+          </div>
+        </div>
+        
+        <div className="border-t p-3 flex justify-center">
+          <button
+            onClick={onAddToComposer}
+            className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 w-full"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 12H16M12 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Add to composer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AICopilot = ({ onClose, setMessageInput }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showInitialState, setShowInitialState] = useState(true);
+  const [conversation, setConversation] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSourceCard, setShowSourceCard] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({});
+  const [showRefundSources, setShowRefundSources] = useState(false);
+  const [showArticlePopup, setShowArticlePopup] = useState(null);
+  const [selectedText, setSelectedText] = useState('');
+  const [showFormattingToolbar, setShowFormattingToolbar] = useState(false);
+  const [toolbarPosition, setToolbarPosition] = useState(null);
+  const contentRef = useRef(null);
+  
+  const articleContents = {
+    details: {
+      title: "Getting a refund",
+      content: "We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund. This guide outlines the simple steps to help you navigate the refund process and ensure a smooth resolution to your concern. Please note: We can only refund orders placed within the last 60 days, and your item must meet our requirements for condition to be returned. Please check when you placed your order before proceeding."
+    },
+    qrcode: {
+      title: "Refund for an unwanted gift",
+      content: "Unfortunately, we're only able to process refunds for orders that were placed within the last 60 days. Your order was placed well past the cut off date. Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post."
+    }
+  };
+  
+  const toggleSection = (sectionId) => {
+    setShowArticlePopup(articleContents[sectionId]);
+  };
+  
+  // Handle mouse up event for text selection
+  const handleContentMouseUp = () => {
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    if (selectedText) {
+      // Get selection position
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      
+      // Calculate toolbar position - position above the text
+      const x = rect.left + (rect.width / 2);
+      const y = rect.top - 10; // Show toolbar closer to the text
+      
+      setSelectedText(selectedText);
+      setToolbarPosition({ x, y });
+      setShowFormattingToolbar(true);
+    }
+  };
+
+  // Handle formatting option selection
+  const handleFormatOption = (optionId) => {
+    console.log(`Selected option: ${optionId} for text: ${selectedText}`);
+    // Keep toolbar visible when selecting formatting options
+    // Only hide when clicking outside or choosing a dropdown option
+  };
+
+  // Close toolbar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.formatting-toolbar') && 
+          window.getSelection().toString().trim().length === 0) {
+        setShowFormattingToolbar(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mouseup', handleContentMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseup', handleContentMouseUp);
+    };
+  }, []);
+  
+  const handleQuerySubmit = (e) => {
+    e && e.preventDefault();
+    
+    if (!searchQuery.trim()) return;
+    
+    // Add user question to conversation
+    const newConversation = [
+      ...conversation,
+      {
+        type: 'user',
+        message: searchQuery,
+      }
+    ];
+    
+    setConversation(newConversation);
+    setShowInitialState(false);
+    setIsSearching(true);
+    
+    // Simulate AI searching and responding
+    setTimeout(() => {
+      if (searchQuery.toLowerCase().includes('refund')) {
+        setConversation([
+          ...newConversation,
+          {
+            type: 'ai',
+            message: 'Searching for relevant sources...',
+            isSearching: true
+          }
+        ]);
+        
+        setTimeout(() => {
+          setShowSourceCard(true);
+          setIsSearching(false);
+          setShowRefundSources(true);
+          
+          setTimeout(() => {
+            setConversation(prev => [
+              ...prev,
+              {
+                type: 'ai',
+                message: 'We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.',
+                isResponse: true
+              }
+            ]);
+          }, 500);
+        }, 1000);
+        
+      } else {
+        setConversation([
+          ...newConversation,
+          {
+            type: 'ai',
+            message: 'Searching for relevant sources...',
+            isSearching: true
+          },
+          {
+            type: 'ai',
+            message: "I'll help you find information on that topic. Let me check our resources.",
+            isResponse: true
+          }
+        ]);
+        setIsSearching(false);
+      }
+      setSearchQuery('');
+    }, 1000);
+  };
+  
+  const handleSuggestedQuestion = (question) => {
+    setSearchQuery(question);
+    setTimeout(() => {
+      handleQuerySubmit();
+    }, 100);
+  };
+
+  const handleAddToComposer = () => {
+    const refundText = `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund. 
+
+To assist you with your refund request, could you please provide your order ID and proof of purchase.
+
+Please note:
+We can only refund orders placed within the last 60 days, and your item must meet our requirements for condition to be returned. Please check when you placed your order before proceeding.
+
+Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.`;
+
+    setMessageInput(refundText);
+    onClose();
+  };
+  
+  const closeArticlePopup = () => {
+    setShowArticlePopup(null);
+  };
+  
+  const renderRefundResponse = () => (
+    <div className="bg-purple-100/70 rounded-lg p-4 mt-1" onMouseUp={handleContentMouseUp}>
+      <p className="text-sm text-gray-800">
+        We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.
+      </p>
+      
+      <p className="text-sm text-gray-700 mt-3 relative">
+        To assist you with your refund request, could you please provide your order ID and proof of purchase.
+        <NumberedIcon number="1" onClick={() => toggleSection('details')} />
+      </p>
+      
+      <p className="text-sm text-gray-700 mt-3 relative">
+        Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.
+        <NumberedIcon number="2" onClick={() => toggleSection('qrcode')} />
+      </p>
+      
+      <div className="flex justify-center mt-4 pt-3 border-t border-purple-200">
+        <button 
+          onClick={handleAddToComposer}
+          className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white py-2 px-4 rounded border border-gray-300 hover:bg-gray-50 w-full"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 12H16M12 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Add to composer
+        </button>
+      </div>
+    </div>
+  );
+  
+  return (
+    <div className="h-full flex flex-col bg-gradient-to-br from-white to-purple-50/30" ref={contentRef}>
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-white">
+        <div className="flex items-center space-x-4">
+          <button 
+            className="px-4 py-2 text-sm font-medium border-b-2 text-indigo-600 border-indigo-600"
+          >
+            AI Copilot
+          </button>
+          <button 
+            className="px-4 py-2 text-sm font-medium border-b-2 text-gray-500 border-transparent"
+          >
+            Details
+          </button>
+        </div>
+        <button onClick={onClose} className="p-2">
+          <span className="px-3 py-1 text-sm bg-black text-white rounded-md">Close</span>
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div 
+        className="flex-1 overflow-y-auto p-4 flex flex-col"
+        onMouseUp={handleContentMouseUp}
+      >
+        {showInitialState && conversation.length === 0 ? (
+          /* Initial state - AI Assistant Intro */
+          <div className="flex items-center justify-center mt-12 mb-auto">
+            <div className="text-center">
+              <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-white text-sm font-medium">AI</span>
+              </div>
+              <h3 className="font-medium text-gray-900">Hi, I'm Fin AI Copilot</h3>
+              <p className="text-sm text-gray-500 mt-1">Ask me anything from this conversation.</p>
+            </div>
+          </div>
+        ) : (
+          /* Conversation View */
+          <div className="flex-1">
+            {conversation.map((item, index) => (
+              <div key={index} className="mb-4">
+                {item.type === 'user' ? (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-xs">You</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">You</p>
+                      <p className="text-sm">{item.message}</p>
+                    </div>
+                  </div>
+                ) : (
+                  item.isSearching ? (
+                    <div className="flex items-start space-x-3">
+                      <div className="w-7 h-7 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-xs">Fin</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Fin</p>
+                        <p className="text-sm text-gray-500">{item.message}</p>
+                      </div>
+                    </div>
+                  ) : item.isResponse ? (
+                    <div className="flex items-start space-x-3">
+                      <div className="w-7 h-7 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-xs">Fin</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Fin</p>
+                        
+                        {item.message.toLowerCase().includes('refund') ? renderRefundResponse() : (
+                          <div className="bg-white border rounded-lg p-3 mt-1" onMouseUp={handleContentMouseUp}>
+                            <p className="text-sm">{item.message}</p>
+                          </div>
+                        )}
+                        
+                        {showSourceCard && index === conversation.length - 1 && showRefundSources && (
+                          <RefundSources onAddToComposer={handleAddToComposer} />
+                        )}
+                      </div>
+                    </div>
+                  ) : null
+                )}
+              </div>
+            ))}
+            
+            {isSearching && (
+              <div className="flex justify-center my-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-blue-500"></div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Information about AI capabilities */}
+        {conversation.length === 0 && (
+          <div className="mt-6 mb-8">
+            <p className="text-sm text-gray-600 mb-2">
+              And the inbox comes with an AI co-pilot to enhance your agent's experience too.
+              Just ask it a question and it generates a highly accurate answer.
+            </p>
+            <p className="text-sm text-gray-600">
+              Pulling context from your public health content and even from previous conversations.
+            </p>
+          </div>
+        )}
+      
+        {/* Footer with suggestions and input */}
+        <div className="mt-auto">
+          {/* Suggested Questions - above input field */}
+          <div className="mb-4">
+            <div className="flex items-center">
+              <span className="text-xs text-blue-500 font-medium mr-2">Suggested</span>
+              <span className="text-xs text-gray-400">✦</span>
+            </div>
+            <button 
+              onClick={() => handleSuggestedQuestion("How do I get a refund?")}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              How do I get a refund?
+            </button>
+          </div>
+
+          {/* Input field */}
+          <form onSubmit={handleQuerySubmit} className="relative pt-2 border-t border-gray-200">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Ask a question..."
+              className="w-full p-3 pr-10 border rounded-lg bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
+            />
+            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Popup Dialog */}
+      {showArticlePopup && (
+        <ArticlePopup 
+          title={showArticlePopup.title}
+          content={showArticlePopup.content}
+          onClose={closeArticlePopup}
+          onAddToComposer={handleAddToComposer}
+        />
+      )}
+
+      {/* Formatting Toolbar */}
+      {showFormattingToolbar && selectedText && (
+        <FormattingToolbar 
+          position={toolbarPosition}
+          onClose={() => setShowFormattingToolbar(false)}
+          onOptionSelect={handleFormatOption}
+        />
+      )}
+    </div>
+  );
+};
+
+export default AICopilot; 
