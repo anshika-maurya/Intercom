@@ -9,10 +9,6 @@ import { FaTruckPickup } from "react-icons/fa";
 import { TfiNewWindow } from "react-icons/tfi";
 import { FcMoneyTransfer } from "react-icons/fc";
 
-
-
-
-
 const NumberedIcon = ({ number, onClick }) => (
   <button 
     onClick={onClick}
@@ -67,7 +63,11 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
   );
 };
 
+
+
 const AICopilot = ({ onClose, setMessageInput }) => {
+  
+ const [inputPlaceholder, setInputPlaceholder] = useState("Ask a question...");
   const [searchQuery, setSearchQuery] = useState('');
   const [showInitialState, setShowInitialState] = useState(true);
   const [conversation, setConversation] = useState([]);
@@ -79,17 +79,19 @@ const AICopilot = ({ onClose, setMessageInput }) => {
   const [selectedText, setSelectedText] = useState('');
   const [showFormattingToolbar, setShowFormattingToolbar] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState(null);
-
+  const [showSuggestedText, setShowSuggestedText] = useState(true);
   const contentRef = useRef(null);
 
-  // New state to control Suggested text visibility
-  const [showSuggestedText, setShowSuggestedText] = useState(true);
 
+  
+
+  // New state to control Suggested text visibility
+  
   // Scroll handler to hide "Suggested How do I get a refund?" when scrolling down
-  const handleScroll = () => {
+    const handleScroll = () => {
     if (!contentRef.current) return;
     const scrollTop = contentRef.current.scrollTop;
-    // If scrolled down more than 20px, hide suggested text
+
     if (scrollTop > 20) {
       setShowSuggestedText(false);
     } else {
@@ -97,17 +99,19 @@ const AICopilot = ({ onClose, setMessageInput }) => {
     }
   };
 
-  useEffect(() => {
-    const refCurrent = contentRef.current;
-    if (refCurrent) {
-      refCurrent.addEventListener('scroll', handleScroll);
+   useEffect(() => {
+    const contentEl = contentRef.current;
+    if (contentEl) {
+      contentEl.addEventListener('scroll', handleScroll);
     }
+
     return () => {
-      if (refCurrent) {
-        refCurrent.removeEventListener('scroll', handleScroll);
+      if (contentEl) {
+        contentEl.removeEventListener('scroll', handleScroll);
       }
     };
   }, []);
+
 
   const articleContents = {
     details: {
@@ -246,19 +250,25 @@ const AICopilot = ({ onClose, setMessageInput }) => {
   
   const handleSuggestedQuestion = (question) => {
   setSearchQuery(question);
-  
-  // Scroll container ko upar le jao
-  if (contentRef.current) {
-    contentRef.current.scrollTop = 0;  // ya window.scrollTo(0,0) agar window scroll ho raha ho
-  }
-  
-  // Hide suggested text
-  setShowSuggestedText(false);
-  
+  setInputPlaceholder("Ask a follow-up question..."); // 👈 update placeholder
+  setShowSuggestedText(false); // 👈 hide suggested message
+  if (contentRef.current) contentRef.current.scrollTop = 0;
+
   setTimeout(() => {
     handleQuerySubmit();
   }, 100);
 };
+
+
+{showSuggestedText && (
+  <div 
+    className="text-sm text-blue-600 cursor-pointer hover:underline"
+    onClick={() => handleSuggestedQuestion("How do I get a refund?")}
+  >
+    Suggested: How do I get a refund?
+  </div>
+)}
+
 
   const handleAddToComposer = () => {
     const refundText = `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund. 
@@ -444,64 +454,69 @@ Once I've checked these details, if everything looks OK, I will send a returns Q
     )}
 
     {/* Footer with suggestions and input */}
-    <div>
-      {/* Suggested Questions - above input field */}
-   <div
-  className="
-    mb-4 inline-flex items-center space-x-2 bg-white px-3 py-1 rounded shadow
-    text-gray-600 cursor-pointer
-    hover:text-indigo-900
-    hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-50
-    transition-colors
-    group
-  "
->
-  <div className="flex items-center">
-    <span className="text-md font-bold text-gray-800 group-hover:text-indigo-900 flex items-center">
-      Suggested
-    </span>
-    <span className="ml-3 text-gray-500 text-md group-hover:text-indigo-900">
-      <FcMoneyTransfer />
-    </span>
-  </div>
-  <button
-    onClick={() => handleSuggestedQuestion('How do I get a refund?')}
-    className="text-md font-normal text-gray-600 group-hover:text-indigo-900 hover:underline"
+   <div>
+  {/* Suggested Question Prompt - shown conditionally */}
+  {showSuggestedText && (
+    <div
+      className="mb-4 inline-flex items-center space-x-3 bg-white px-4 py-2 rounded shadow-sm
+                 text-gray-600 cursor-pointer transition-colors group
+                 hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-50"
+    >
+      <div className="flex items-center space-x-2">
+        <span className="text-md font-semibold text-gray-800 group-hover:text-indigo-900">
+          Suggested
+        </span>
+        <span className="text-gray-500 group-hover:text-indigo-900 text-lg">
+          <FcMoneyTransfer />
+        </span>
+      </div>
+
+      <button
+        onClick={() => handleSuggestedQuestion('How do I get a refund?')}
+        className="text-md font-normal text-gray-600 group-hover:text-indigo-900 hover:underline"
+      >
+        How do I get a refund?
+      </button>
+    </div>
+  )}
+
+  {/* Input Field */}
+  <form
+    onSubmit={handleQuerySubmit}
+    className="relative pt-2 border-t border-gray-200"
   >
-    How do I get a refund?
-  </button>
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder={inputPlaceholder}
+      className="w-full p-3 pr-10 border rounded-lg bg-white placeholder-gray-400 
+                 focus:outline-none focus:ring-1 focus:ring-gray-300"
+    />
+
+    {/* Search Icon Button */}
+    <button
+      type="submit"
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </form>
 </div>
 
-
-
-
-      {/* Input field */}
-      <form onSubmit={handleQuerySubmit} className="relative pt-2 border-t border-gray-200">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Ask a question..."
-          className="w-full p-3 pr-10 border rounded-lg bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
-        />
-        <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </form>
-    </div>
   </div>
 
   {/* Popup Dialog */}
