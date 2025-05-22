@@ -6,7 +6,8 @@ import FormattingToolbar from './FormattingToolbar';
 import { FaIntercom } from "react-icons/fa";
 import { LuPanelRightClose } from "react-icons/lu";
 import { FaTruckPickup } from "react-icons/fa";
-
+import { TfiNewWindow } from "react-icons/tfi";
+import { FcMoneyTransfer } from "react-icons/fc";
 
 
 
@@ -57,9 +58,7 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
             onClick={onAddToComposer}
             className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 w-full"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 12H16M12 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <TfiNewWindow />
             Add to composer
           </button>
         </div>
@@ -303,9 +302,7 @@ Once I've checked these details, if everything looks OK, I will send a returns Q
       onClick={handleAddToComposer}
       className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white py-2 px-4 rounded border border-gray-300 hover:bg-gray-50 w-full"
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 12H16M12 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <TfiNewWindow />
       Add to composer
     </button>
   </div>
@@ -447,7 +444,7 @@ Once I've checked these details, if everything looks OK, I will send a returns Q
     )}
 
     {/* Footer with suggestions and input */}
-    <div className="mt-auto bg-gradient-to-t from-white to-transparent">
+    <div>
       {/* Suggested Questions - above input field */}
    <div
   className="
@@ -463,8 +460,8 @@ Once I've checked these details, if everything looks OK, I will send a returns Q
     <span className="text-md font-bold text-gray-800 group-hover:text-indigo-900 flex items-center">
       Suggested
     </span>
-    <span className="ml-1 text-gray-500 text-md group-hover:text-indigo-900">
-      <FaTruckPickup />
+    <span className="ml-3 text-gray-500 text-md group-hover:text-indigo-900">
+      <FcMoneyTransfer />
     </span>
   </div>
   <button

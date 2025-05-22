@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
+
 const toneOptions = [
   { id: 'professional', label: 'Professional', description: 'Clear, formal, and business-appropriate' },
   { id: 'friendly', label: 'Friendly', description: 'Warm, approachable, and conversational' },
