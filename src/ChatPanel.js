@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import FormattingToolbar from './components/FormattingToolbar';
-
+import { MdChat } from "react-icons/md";
+import { RiArrowDropDownLine } from "react-icons/ri";
 const dummyMessages = [
   {
     id: 1,
@@ -8,7 +9,8 @@ const dummyMessages = [
     message: "I bought a product from your store in November as a Christmas gift for a relative of mine. It turns out they have something very similar already. I am hoping you'd be able to refund me, as it is un-opened.",
     time: '2m ago',
     name: 'Luis Easton',
-    avatar: 'LE'
+    avatar: 'LE',
+    isTyping: false
   },
   {
     id: 2,
@@ -21,6 +23,7 @@ const dummyMessages = [
     isTyping: false
   }
 ];
+
 
 const groupMessagesByDate = (messages) => {
   const groups = {};
@@ -189,22 +192,20 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
         // Try using our custom position calculator for textarea
         const startPos = getCaretCoordinates(textarea, start);
         const endPos = getCaretCoordinates(textarea, end);
-        
-        // Position in middle of selection
+          // Position in middle of selection
         const x = startPos.left + ((endPos.left - startPos.left) / 2);
-        // Position above the selection
-        const y = startPos.top - 40;
+        // Position below the selection
+        const y = endPos.top + 10;
         
         setSelectedText(selection);
         setToolbarPosition({ x, y });
         setShowFormattingToolbar(true);
       } catch (error) {
         // Fallback if all else fails
-        const textareaRect = textarea.getBoundingClientRect();
-        setSelectedText(selection);
+        const textareaRect = textarea.getBoundingClientRect();        setSelectedText(selection);
         setToolbarPosition({ 
           x: textareaRect.left + (textareaRect.width / 2),
-          y: textareaRect.top - 30
+          y: textareaRect.top + textareaRect.height + 10
         });
         setShowFormattingToolbar(true);
       }
@@ -227,154 +228,147 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
         </div>
       </div>
     );
-  }
-
-  return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-white to-purple-50">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-sm font-medium text-indigo-700">
-            {selectedChat.name.charAt(0)}
+  }  return (
+    <div className="h-full w-full bg-gradient-to-br from-white to-purple-50">
+      <div className="flex flex-col w-full h-full bg-white shadow-md overflow-hidden transition-all duration-300">
+        {/* Chat Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-sm font-medium text-indigo-700">
+              {selectedChat.name.charAt(0)}
+            </div>
+            <div>
+              <h2 className="text-lg font-medium text-gray-900">{selectedChat.name}</h2>
+              <p className="text-sm text-gray-500">Active now</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-medium text-gray-900">{selectedChat.name}</h2>
-            <p className="text-sm text-gray-500">Active now</p>
+          <div className="flex items-center space-x-2">
+            <button className="p-2 text-gray-500 hover:text-gray-700">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+            <button className="px-3 py-1 text-sm bg-gray-900 text-white rounded-md">
+              Close
+            </button>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <button className="p-2 text-gray-500 hover:text-gray-700">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
-          </button>
-          <button className="px-3 py-1 text-sm bg-gray-900 text-white rounded-md">
-            Close
-          </button>
-        </div>
-      </div>
+        </div>        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="w-full space-y-8">
+            {Object.entries(messageGroups).map(([date, messages]) => (
+              <div key={date} className="space-y-4">
+                <div className="flex justify-center">
+                  <span className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full">{date}</span>
+                </div>
+                {messages.map((msg, idx) => (
+                  <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`flex items-start space-x-2 max-w-[70%] ${msg.sender === 'agent' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                      <div className={`min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-base font-semibold text-white ${msg.sender === 'agent' ? 'bg-indigo-600' : 'bg-gray-600'}`}>
+  {msg.avatar}
+</div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4">
-        <div className="space-y-8">
-          {Object.entries(messageGroups).map(([date, messages]) => (
-            <div key={date} className="space-y-4">
-              <div className="flex justify-center">
-                <span className="px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full">{date}</span>
-              </div>
-              {messages.map((msg, idx) => (
-                <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex items-start space-x-2 max-w-[70%] ${msg.sender === 'agent' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white ${msg.sender === 'agent' ? 'bg-indigo-600' : 'bg-gray-600'}`}>
-                      {msg.avatar}
-                    </div>
-                    <div>
-                      <div className={`${msg.sender === 'agent' ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-100'} rounded-lg px-4 py-3`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-900">{msg.name}</span>
-                          <span className="text-xs text-gray-500">{msg.time}</span>
+
+                      <div>
+                        <div className={`${msg.sender === 'agent' ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-100'} rounded-lg px-4 py-3`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-900">{msg.name}</span>
+                            <span className="text-xs text-gray-500">{msg.time}</span>
+                          </div>
+                          <p className="text-sm text-gray-800">{msg.message}</p>
                         </div>
-                        <p className="text-sm text-gray-800">{msg.message}</p>
+                        {msg.seen && (
+                          <div className="flex items-center justify-end mt-1">
+                            <span className="text-xs text-gray-500">Seen</span>
+                            <span className="ml-1">•</span>
+                            <span className="text-xs text-gray-500 ml-1">{msg.time}</span>
+                          </div>
+                        )}
                       </div>
-                      {msg.seen && (
-                        <div className="flex items-center justify-end mt-1">
-                          <span className="text-xs text-gray-500">Seen</span>
-                          <span className="ml-1">•</span>
-                          <span className="text-xs text-gray-500 ml-1">{msg.time}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            ))}
+          </div>
 
-        {/* Typing Indicator */}
-        {isTyping && (
-          <div className="flex items-center space-x-2 mt-4">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white bg-indigo-600">
-              SA
-            </div>
-            <div className="bg-gray-100 rounded-lg px-4 py-2">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className="flex items-center space-x-2 mt-4">
+            
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white bg-indigo-600">
+                SA
+              </div>
+              <div className="bg-gray-100 rounded-lg px-4 py-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Message Composer */}
-      <div className="border-t bg-white px-6 py-4">
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <button className="p-2 text-gray-500 hover:text-gray-700 mr-1">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+        {/* Message Composer */}
+        <div className="border-t bg-white px-6 py-4">
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+  <MdChat className="text-xl text-gray-850 relative top-[2px]" />
+  <span className="ml-1 text-sm text-gray-850 font-bold">Chat</span>
+  <RiArrowDropDownLine className="text-3xl text-gray-850 ml-1" />
+</div>
+
+              
+              <button 
+                onClick={onOpenCopilot}
+                className="flex items-center text-indigo-600 hover:text-indigo-700 text-sm"
+              >
+                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-              </button>
-              <button className="p-2 font-bold text-gray-500 hover:text-gray-700 mr-1">B</button>
-              <button className="p-2 italic text-gray-500 hover:text-gray-700 mr-1">I</button>
-              <button className="p-2 text-gray-500 hover:text-gray-700">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
+                Ask AI Copilot
               </button>
             </div>
             
-            <button 
-              onClick={onOpenCopilot}
-              className="flex items-center text-indigo-600 hover:text-indigo-700 text-sm"
-            >
-              <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Ask AI Copilot
-            </button>
+            <form onSubmit={handleSubmit} className="flex items-end gap-4">
+              <div className="flex-1 relative">
+                <textarea
+                  ref={textareaRef}
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onMouseUp={handleTextareaMouseUp}
+                  onKeyUp={handleTextareaKeyUp}
+                  placeholder="Type your message..."
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px] resize-none"
+                  rows="4"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+                  disabled={!messageInput.trim()}
+                >
+                  Send
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                </button>
+              </div>
+            </form>
           </div>
-          
-          <form onSubmit={handleSubmit} className="flex items-end gap-4">
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                onMouseUp={handleTextareaMouseUp}
-                onKeyUp={handleTextareaKeyUp}
-                placeholder="Type your message..."
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px] resize-none"
-                rows="4"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
-                disabled={!messageInput.trim()}
-              >
-                Send
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
 
-      {/* Add formatting toolbar */}
-      {showFormattingToolbar && selectedText && (
-        <FormattingToolbar 
-          position={toolbarPosition}
-          onClose={() => setShowFormattingToolbar(false)}
-          onOptionSelect={handleFormatOption}
-        />
-      )}
+        {/* Add formatting toolbar */}
+        {showFormattingToolbar && selectedText && (
+          <FormattingToolbar 
+            position={toolbarPosition}
+            onClose={() => setShowFormattingToolbar(false)}
+            onOptionSelect={handleFormatOption}
+          />
+        )}
+      </div>
     </div>
   );
 }

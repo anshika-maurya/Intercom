@@ -51,7 +51,7 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
         
         <div className="border-t p-3 flex justify-center">
           <button
-            onClick={onAddToComposer}
+            onClick={() => onAddToComposer(content)}
             className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 w-full"
           >
             <TfiNewWindow />
@@ -270,17 +270,16 @@ const AICopilot = ({ onClose, setMessageInput }) => {
 )}
 
 
-  const handleAddToComposer = () => {
-    const refundText = `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund. 
+  const handleAddToComposer = (customText) => {
+    // If customText is provided, use that, otherwise use default text
+    // Ensure we're always setting a string value
+    const textToAdd = (customText || `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.
 
 To assist you with your refund request, could you please provide your order ID and proof of purchase.
 
-Please note:
-We can only refund orders placed within the last 60 days, and your item must meet our requirements for condition to be returned. Please check when you placed your order before proceeding.
+Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.`).toString();
 
-Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.`;
-
-    setMessageInput(refundText);
+    setMessageInput(textToAdd);
     onClose();
   };
   
@@ -309,7 +308,11 @@ Once I've checked these details, if everything looks OK, I will send a returns Q
 
   <div className="flex justify-center mt-4 pt-3 border-t border-purple-200">
     <button 
-      onClick={handleAddToComposer}
+      onClick={() => handleAddToComposer(`We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.
+
+To assist you with your refund request, could you please provide your order ID and proof of purchase.
+
+Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.`)}
       className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white py-2 px-4 rounded border border-gray-300 hover:bg-gray-50 w-full"
     >
       <TfiNewWindow />
