@@ -56,7 +56,7 @@ const RefundSourceDetail = ({ title, sourceType, author, time, content, onClose,
         
         <div className="border-t p-3 flex justify-center">
           <button
-            onClick={onAddToComposer}
+            onClick={() => onAddToComposer(content)}
             className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 w-full"
           >
             <TfiNewWindow />
@@ -150,4 +150,4 @@ const RefundSources = ({ onAddToComposer }) => {
   );
 };
 
-export default RefundSources; 
+export default RefundSources;
