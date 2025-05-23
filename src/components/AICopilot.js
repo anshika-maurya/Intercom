@@ -17,6 +17,20 @@ const NumberedIcon = ({ number, onClick }) => (
     {number}
   </button>
 );
+const AICopilotBox = ({ messages }) => {
+  return (
+    <div className="bg-gray-50 p-4 border rounded max-w-xl">
+      <h2 className="text-lg font-bold mb-2">AI Copilot</h2>
+      <div className="space-y-2">
+        {messages.map((msg, i) => (
+          <div key={i} className="bg-white p-3 rounded border shadow text-gray-800">
+            {msg}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
   return (
@@ -51,7 +65,10 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
         
         <div className="border-t p-3 flex justify-center">
           <button
-            onClick={() => onAddToComposer(content)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToComposer(content, e);
+            }}
             className="flex items-center justify-center gap-2 text-gray-800 font-medium text-sm bg-white border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 w-full"
           >
             <TfiNewWindow />
@@ -65,11 +82,10 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
 
 
 
-const AICopilot = ({ onClose, setMessageInput }) => {
-  
- const [inputPlaceholder, setInputPlaceholder] = useState("Ask a question...");
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showInitialState, setShowInitialState] = useState(true);
+const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
+  const [inputPlaceholder, setInputPlaceholder] = useState("Ask a question...");
+  const [searchQuery, setSearchQuery] = useState(selectedMessage || '');
+  const [showInitialState, setShowInitialState] = useState(!selectedMessage);
   const [conversation, setConversation] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSourceCard, setShowSourceCard] = useState(false);
@@ -79,11 +95,17 @@ const AICopilot = ({ onClose, setMessageInput }) => {
   const [selectedText, setSelectedText] = useState('');
   const [showFormattingToolbar, setShowFormattingToolbar] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState(null);
-  const [showSuggestedText, setShowSuggestedText] = useState(true);
+  const [showSuggestedText, setShowSuggestedText] = useState(!selectedMessage);
   const contentRef = useRef(null);
 
-
-  
+  useEffect(() => {
+    if (selectedMessage) {
+      setSearchQuery(selectedMessage);
+      setShowSuggestedText(false);
+      setShowInitialState(false);
+      handleQuerySubmit();
+    }
+  }, [selectedMessage]);
 
   // New state to control Suggested text visibility
   
@@ -112,6 +134,17 @@ const AICopilot = ({ onClose, setMessageInput }) => {
     };
   }, []);
 
+  // Handle selected message on mount
+  useEffect(() => {
+    if (selectedMessage) {
+      setShowSuggestedText(false);
+      setSearchQuery(selectedMessage);
+      // Simulate a delay before submitting
+      setTimeout(() => {
+        handleQuerySubmit();
+      }, 100);
+    }
+  }, [selectedMessage]);
 
   const articleContents = {
     details: {
@@ -270,7 +303,7 @@ const AICopilot = ({ onClose, setMessageInput }) => {
 )}
 
 
-  const handleAddToComposer = (customText) => {
+  const handleAddToComposer = (customText, e) => {
     // If customText is provided, use that, otherwise use default text
     // Ensure we're always setting a string value
     const textToAdd = (customText || `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.
@@ -279,9 +312,10 @@ To assist you with your refund request, could you please provide your order ID a
 
 Once I've checked these details, if everything looks OK, I will send a returns QR code which you can use to post the item back to us. Your refund will be automatically issued once you put it in the post.`).toString();
 
+    // Prevent event propagation if event exists
+    e?.stopPropagation();
     setMessageInput(textToAdd);
-    onClose();
-  };
+};
   
   const closeArticlePopup = () => {
     setShowArticlePopup(null);
