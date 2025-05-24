@@ -35,7 +35,7 @@ const FormattingToolbar = ({ position }) => {
   const commandMap = {
     bold: 'bold',
     italic: 'italic',
-    code: 'insertHTML', // for code, we will wrap selection in <code> tag
+    code: 'insertHTML', 
     link: 'createLink',
     h1: 'formatBlock',
     h2: 'formatBlock',
@@ -43,7 +43,7 @@ const FormattingToolbar = ({ position }) => {
 
   const handleFormat = (id) => {
     if (id === 'code') {
-      // Wrap selection in <code> tag
+      
       const selection = window.getSelection();
       if (!selection.rangeCount) return;
       const range = selection.getRangeAt(0);
@@ -66,8 +66,6 @@ const FormattingToolbar = ({ position }) => {
   };
 
   const handleOptionSelect = (optionId) => {
-    // Here you can integrate rephrase option selection logic
-    // For now, just close the dropdown
     setShowRephrase(false);
   };
 
@@ -78,7 +76,6 @@ const FormattingToolbar = ({ position }) => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="bg-white rounded shadow-lg border border-gray-200 flex items-center space-x-1 px-1 py-1">
-        {/* AI Button replacing Rephrase dropdown */}
         <button
           className="bg-black text-white text-sm font-medium w-8 h-8 flex items-center justify-center rounded-sm"
           onClick={() => setShowRephrase(!showRephrase)}
@@ -101,7 +98,7 @@ const FormattingToolbar = ({ position }) => {
         ))}
       </div>
 
-      {/* Inline panel with rephrase options */}
+      
       {showRephrase && (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 mt-1 p-2 min-w-[220px] absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2">
           {rephraseOptions.map((option, index) => (

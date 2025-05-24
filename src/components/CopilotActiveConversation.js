@@ -26,7 +26,7 @@ const CopilotActiveConversation = ({ conversation }) => {
               </div>
             </div>
 
-            {/* Optional: Render sources if available */}
+            
             {msg.sender === 'AI' && msg.sources?.length > 0 && (
               <div className="ml-10 mt-2 space-y-2">
                 {msg.sources.map((source, i) => (

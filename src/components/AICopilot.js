@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-
 import RefundSources from './RefundSources';
 import FormattingToolbar from './FormattingToolbar';
 import { FaIntercom } from "react-icons/fa";
 import { LuPanelRightClose } from "react-icons/lu";
-
 import { TfiNewWindow } from "react-icons/tfi";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { debounce } from "lodash";
@@ -18,8 +15,6 @@ const NumberedIcon = ({ number, onClick }) => (
     {number}
   </button>
 );
-
-
 
 const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
   return (
@@ -70,7 +65,6 @@ const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
 };
 
 
-
 const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
   const [inputPlaceholder, setInputPlaceholder] = useState("Ask a question...");
   const [searchQuery, setSearchQuery] = useState(selectedMessage || '');
@@ -86,8 +80,6 @@ const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
   const [toolbarPosition, setToolbarPosition] = useState(null);
   const [showSuggestedText, setShowSuggestedText] = useState(!selectedMessage);
   const contentRef = useRef(null);
-
-  
 
   // New state to control Suggested text visibility
   
@@ -126,7 +118,7 @@ useEffect(() => {
     setShowSuggestedText(false);
     setSearchQuery(selectedMessage);
     setShowInitialState(false);
-    debouncedSubmit(); // ✅ Only this is needed
+    debouncedSubmit(); 
   }
 }, [selectedMessage]);
 
@@ -169,8 +161,6 @@ const articleContents = {
   // Handle formatting option selection
   const handleFormatOption = (optionId) => {
     console.log(`Selected option: ${optionId} for text: ${selectedText}`);
-    // Keep toolbar visible when selecting formatting options
-    // Only hide when clicking outside or choosing a dropdown option
   };
 
   // Close toolbar when clicking outside
@@ -227,9 +217,7 @@ const articleContents = {
           setShowRefundSources(true);
           
           setTimeout(() => {
-            // Remove 'Searching for relevant sources...' from conversation before adding refund response
             setConversation(prev => {
-              // Remove last item if it is isSearching
               let updated = prev;
               if (updated.length > 0 && updated[updated.length-1].isSearching) {
                 updated = updated.slice(0, -1);
@@ -282,8 +270,6 @@ const handleSuggestedQuestion = (question) => {
   }, 100);
 };
 
-
-
 {showSuggestedText && (
   <div 
     className="text-sm text-blue-600 cursor-pointer hover:underline"
@@ -293,10 +279,7 @@ const handleSuggestedQuestion = (question) => {
   </div>
 )}
 
-
-  const handleAddToComposer = (customText, e) => {
-    // If customText is provided, use that, otherwise use default text
-    // Ensure we're always setting a string value
+   const handleAddToComposer = (customText, e) => {
     const textToAdd = (customText || `We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund.
 
 To assist you with your refund request, could you please provide your order ID and proof of purchase.

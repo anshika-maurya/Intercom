@@ -85,9 +85,7 @@ const AskFinCopilot = ({ onOpenAICopilot, setShowQuickQuestion, setCopilotQuesti
       
       if (selectedText) {
         setShowQuickQuestion(true);
-        // Only set a suggested question if we have specific context
-        // Otherwise, leave it empty and let the UI handle it appropriately
-        if (selectedText.length > 10) {  // Only suggest for meaningful selections
+        if (selectedText.length > 10) {  
           setCopilotQuestion(`Help me understand: "${selectedText}"`);
         } else {
           setCopilotQuestion('');

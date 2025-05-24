@@ -74,13 +74,11 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
     }
   };
 
-  // Helper function to calculate position of selected text in textarea
+  
   const getCaretCoordinates = (textarea, position) => {
-    // Create a mirror element to copy the textarea's style
     const mirror = document.createElement('div');
     const style = window.getComputedStyle(textarea);
     
-    // Copy styles from textarea to mirror
     const stylesToCopy = [
       'boxSizing', 'width', 'height', 'padding', 'border', 'fontFamily',
       'fontSize', 'fontWeight', 'lineHeight', 'whiteSpace', 'wordWrap'
@@ -96,11 +94,10 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
     mirror.style.visibility = 'hidden';
     mirror.style.overflowWrap = 'break-word';
     
-    // Get text before cursor and add a span to mark cursor position
     const textBeforeCursor = textarea.value.substring(0, position);
     mirror.textContent = textBeforeCursor;
     const span = document.createElement('span');
-    span.textContent = '.'; // Use any character, will measure its position
+    span.textContent = '.'; 
     mirror.appendChild(span);
     
     document.body.appendChild(mirror);
@@ -110,7 +107,6 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
     };
     document.body.removeChild(mirror);
     
-    // Adjust by textarea's position
     const textareaRect = textarea.getBoundingClientRect();
     return {
       top: textareaRect.top + coordinates.top - textarea.scrollTop,
@@ -158,7 +154,6 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
       setMessageInput(formattedText);
       setShowFormattingToolbar(false);
       
-      // Focus back on textarea and set cursor position after the formatted text
       setTimeout(() => {
         textarea.focus();
         
@@ -184,7 +179,7 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
     }
   };
 
-  // Separate the selection checking logic for reuse
+  
   const handleCheckSelection = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;

@@ -1,49 +1,14 @@
-/* Selection styles */
-::selection {
-  background: rgba(79, 70, 229, 0.2);
-}
-
-.copilot-popup {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
-
-/* Prevent zoom on double tap on mobile */
-.copilot-popup * {
-  touch-action: manipulation;
-}
-
-/* Smooth animation for popup */
-.copilot-popup {
-  opacity: 0;
-  animation: fadeIn 0.2s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
+@keyframes fade-slide-up {
+  0% {
     opacity: 0;
-    transform: translate(0, -90%);
+    transform: translateY(10px); /* coming from below */
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translate(0, -100%);
+    transform: translateY(-6px); /* move it slightly upward */
   }
 }
 
-/* Mobile optimizations */
-@media (max-width: 640px) {
-  .copilot-popup {
-    font-size: 14px;
-    padding: 12px;
-  }
-}
-
-/* High contrast mode support */
-@media (forced-colors: active) {
-  .copilot-popup {
-    border: 1px solid CanvasText;
-  }
+.animate-fade-slide-up {
+  animation: fade-slide-up 0.25s ease-out forwards;
 }
