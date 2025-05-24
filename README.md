@@ -1,70 +1,142 @@
-# Getting Started with Create React App
+# 🚀 ChatSupportUI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" />
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
+</div>
 
-## Available Scripts
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" alt="react" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" alt="tailwindcss" width="40" height="40"/>
+</p>
 
-In the project directory, you can run:
+<hr />
 
-### `npm start`
+## 📋 Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Future Enhancements](#-future-enhancements)
+- [License](#-license)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<hr />
 
-### `npm test`
+## 🌟 Overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**ChatSupportUI** is a modern, lightweight React-based frontend UI inspired by industry leaders like Intercom. It offers a rich customer support and chatbot interface experience that can be integrated into any web application.
 
-### `npm run build`
+The interface includes interactive chat windows, quick reply options, conversation history, and inline message tools to help businesses engage customers effectively.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<hr />
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## ✨ Features
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- 💬 **Interactive Chat Interface** - Smooth, intuitive chat UI with message bubbles, typing indicators, and scroll management  
+- 🛠 **Custom Components** - Modular React components like Source Cards with expandable content and action buttons  
+- 🎨 **Tailwind CSS Styling** - Clean and responsive design using Tailwind CSS utility classes  
+- 🔗 **Icon Support** - React Icons integration for better UX/UI visual cues  
+- 🔥 **Expandable Content Cards** - Source cards with toggleable detailed views  
+- 🚀 **Action Buttons** - Buttons to add selected content to a composer or trigger other workflows  
 
-### `npm run eject`
+<hr />
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🛠 Tech Stack
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Frontend
+- **React.js** - UI Library for building interactive user interfaces  
+- **Tailwind CSS** - Utility-first CSS framework for styling  
+- **React Icons** - Icon library for React components  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+*Note:* This project is frontend-only and can be integrated with any backend API or chatbot service.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+<hr />
 
-## Learn More
+## 📂 Project Structure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+chat-support-ui/
+├── public/ # Static files
+├── src/
+│ ├── components/ # Reusable React components (e.g., SourceCard)
+│ ├── assets/ # Images, icons, styles
+│ ├── hooks/ # Custom React hooks (if any)
+│ ├── App.js # Main app component
+│ └── index.js # React DOM render entry
+├── package.json # Project dependencies and scripts
+└── README.md # Project documentation
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+markdown
+Copy
+Edit
 
-### Code Splitting
+<hr />
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🚀 Installation
 
-### Analyzing the Bundle Size
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Setup Steps
 
-### Making a Progressive Web App
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/anshika-maurya/Intercom
+   cd chat-support-ui
+Install dependencies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+bash
+Copy
+Edit
+npm install
+# or
+yarn install
+Start the development server
 
-### Advanced Configuration
+bash
+Copy
+Edit
+npm start
+# or
+yarn start
+Open the app
+Navigate to http://localhost:3000 in your browser.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+<hr />
+💻 Usage
+Use the SourceCard component to display chatbot support articles or knowledge base snippets with expandable details.
 
-### Deployment
+Clicking "Add to composer" can be wired up to send content to a chat input or message composer in your app.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The UI is fully responsive and can be customized via Tailwind CSS classes.
 
-### `npm run build` fails to minify
+<hr />
+🔮 Future Enhancements
+Integrate real backend API for chatbot conversations and message persistence.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Add real-time chat features with websockets.
+
+Support multiple chat threads and user profiles.
+
+Add localization and accessibility improvements.
+
+Enhance UI animations and transitions.
+
+<hr />
+
+## 🌐 Live
+
+The project is deployed and accessible at:
+
+🔗 **Live Demo**: [https://intercom-theta.vercel.app/](https://intercom-theta.vercel.app/)
+
+<hr />
+
+📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+<hr /> <p align="center">Made with ❤️ by Anshika Maurya</p> ```
