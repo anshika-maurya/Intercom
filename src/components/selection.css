@@ -1,0 +1,49 @@
+/* Selection styles */
+::selection {
+  background: rgba(79, 70, 229, 0.2);
+}
+
+.copilot-popup {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on double tap on mobile */
+.copilot-popup * {
+  touch-action: manipulation;
+}
+
+/* Smooth animation for popup */
+.copilot-popup {
+  opacity: 0;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(0, -90%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, -100%);
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .copilot-popup {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .copilot-popup {
+    border: 1px solid CanvasText;
+  }
+}

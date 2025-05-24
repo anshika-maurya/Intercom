@@ -107,10 +107,9 @@ export default function InboxSidebar({ selectedChat, onSelectChat }) {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      {/* Header */}
-      <div className="p-4 border-b">
+      {/* Header */}      <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-medium text-gray-900">Your inbox</h2>
+          <h2 className="text-base font-medium text-gray-900 pl-8 md:pl-0">Your inbox</h2>
           <div className="relative">
             <button
               onClick={handleFilterClick}
@@ -217,33 +216,42 @@ export default function InboxSidebar({ selectedChat, onSelectChat }) {
             <div
               key={chat.id}
               onClick={() => onSelectChat(chat)}
-              className={`p-4 border-b cursor-pointer transition-colors duration-150 hover:bg-gray-50 ${
+              className={`p-3 sm:p-4 border-b cursor-pointer transition-colors duration-150 hover:bg-gray-50 ${
                 selectedChat?.id === chat.id ? 'bg-indigo-50 border-l-4 border-l-indigo-600' : ''
               }`}
             >
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-sm font-medium text-indigo-700">
-                  {chat.name.charAt(0)}
-                </div>
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium text-gray-900 text-sm truncate">{chat.name}</h3>
+                  <div className="flex items-center justify-between gap-1 sm:gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                      <h3 className="font-medium text-gray-900 text-xs sm:text-sm truncate max-w-[150px] sm:max-w-none">{chat.name}</h3>
                       {chat.unread && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                           New
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-gray-500">{chat.time}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-500 whitespace-nowrap">{chat.time}</span>
                   </div>
-                  <div className="flex items-center space-x-2 mt-1">
+                  <div className="flex items-center flex-wrap gap-1.5 mt-1">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[chat.status]}`}>
                       {chat.status}
                     </span>
                     <span className="text-xs text-gray-500">{chat.category}</span>
                   </div>
-                  <p className="text-sm text-gray-600 truncate mt-1">{chat.lastMessage}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate mt-1.5">{chat.lastMessage}</p>
+                </div>                <div className="flex items-center gap-2">
+                  <div className="min-w-[2rem] w-10 h-10 bg-indigo-100 rounded-full items-center justify-center text-sm font-medium text-indigo-700 hidden sm:flex">
+                    {chat.name.charAt(0)}
+                  </div>
+                  <div className="flex sm:hidden min-w-[2rem] w-8 h-8 bg-indigo-100 rounded-full items-center justify-center text-xs font-medium text-indigo-700">
+                    {chat.name.charAt(0)}
+                  </div>
+                  <button className="p-2 text-gray-400 hover:text-gray-600 block sm:hidden">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>

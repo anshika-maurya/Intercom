@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { MdChat } from 'react-icons/md';
+import { RiArrowDropDownLine } from 'react-icons/ri';
+import AICopilot from './components/AICopilot';
+import AskFinCopilot from './components/AskFinCopilot';
 import FormattingToolbar from './components/FormattingToolbar';
-import { MdChat } from "react-icons/md";
-import { RiArrowDropDownLine } from "react-icons/ri";
+
+
 const dummyMessages = [
   {
     id: 1,
@@ -42,6 +46,9 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
   const [selectedText, setSelectedText] = useState('');
   const [showFormattingToolbar, setShowFormattingToolbar] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState(null);
+  const [showAICopilot, setShowAICopilot] = useState(false);
+  const [showQuickQuestion, setShowQuickQuestion] = useState(false);
+  const [copilotQuestion, setCopilotQuestion] = useState('');
   const textareaRef = useRef(null);
   
   useEffect(() => {
@@ -218,6 +225,31 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
   const handleTextareaMouseUp = () => {
     handleCheckSelection();
   };
+  // Handle quick question click
+  const handleQuickQuestion = () => {
+    setShowAICopilot(true);
+    setShowQuickQuestion(false);
+  };  // Handle AI Copilot open/close and questions  
+  const handleOpenAICopilot = (question = '') => {
+    if (onOpenCopilot) {
+      onOpenCopilot();
+    }
+    if (!question && showAICopilot) {
+      // Close the panel
+      setShowAICopilot(false);
+      setCopilotQuestion('');
+      setShowFormattingToolbar(false);
+      return;
+    }
+
+    if (question) {
+      // Open with new question
+      setShowAICopilot(true);
+      setCopilotQuestion(question);
+      setShowFormattingToolbar(false);
+      setShowQuickQuestion(false);
+    }
+  };
 
   if (!selectedChat) {
     return (
@@ -264,17 +296,17 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
                   <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`flex items-start space-x-2 max-w-[70%] ${msg.sender === 'agent' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                       <div className={`min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-base font-semibold text-white ${msg.sender === 'agent' ? 'bg-indigo-600' : 'bg-gray-600'}`}>
-  {msg.avatar}
-</div>
-
-
+                        {msg.avatar}
+                      </div>
                       <div>
-                        <div className={`${msg.sender === 'agent' ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-100'} rounded-lg px-4 py-3`}>
+                        <div 
+                          className={`${msg.sender === 'agent' ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-100'} rounded-lg px-4 py-3 relative group`}
+                          data-chat-message="true"
+                        >
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-sm font-medium text-gray-900">{msg.name}</span>
                             <span className="text-xs text-gray-500">{msg.time}</span>
-                          </div>
-                          <p className="text-sm text-gray-800">{msg.message}</p>
+                          </div>                          <p className="text-sm text-gray-800" data-customer-message={msg.sender === 'customer'}>{msg.message}</p>
                         </div>
                         {msg.seen && (
                           <div className="flex items-center justify-end mt-1">
@@ -290,45 +322,51 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
               </div>
             ))}
           </div>
-
-          {/* Typing Indicator */}
-          {isTyping && (
-            <div className="flex items-center space-x-2 mt-4">
-            
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white bg-indigo-600">
-                SA
-              </div>
-              <div className="bg-gray-100 rounded-lg px-4 py-2">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        </div>        {/* Floating Ask AI Copilot Button */}
+        <button
+          onClick={() => handleOpenAICopilot()}
+          className="group fixed bottom-20 right-4 sm:right-6 md:right-8 z-50 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-700 text-white rounded-full shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 transform hover:scale-110 active:scale-95 overflow-hidden"
+          title="Ask AI Copilot"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative flex items-center justify-center w-full h-full">
+            <span className="text-lg sm:text-xl font-semibold">AI</span>
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full group-hover:-translate-y-1 opacity-0 group-hover:opacity-100 text-[8px] sm:text-[10px] whitespace-nowrap transition-all duration-300 bg-black/80 px-2 py-1 rounded-md">
+              Ask AI Copilot
+            </span>
+          </div>
+        </button>
 
         {/* Message Composer */}
         <div className="border-t bg-white px-6 py-4">
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-  <MdChat className="text-xl text-gray-850 relative top-[2px]" />
-  <span className="ml-1 text-sm text-gray-850 font-bold">Chat</span>
-  <RiArrowDropDownLine className="text-3xl text-gray-850 ml-1" />
-</div>
-
-              
-              <button 
-                onClick={onOpenCopilot}
-                className="flex items-center text-indigo-600 hover:text-indigo-700 text-sm"
+          <div className="flex flex-col">            {showQuickQuestion && (              <div 
+                className="mx-4 my-2 p-2 rounded-lg border border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+                onClick={() => {
+                  handleOpenAICopilot("How do I get a refund?");
+                  setShowQuickQuestion(false);
+                }}
               >
-                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Ask AI Copilot
-              </button>
+                
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between mb-2">              <div className="flex items-center">
+                <MdChat className="text-xl text-gray-850 relative top-[2px]" />
+                <span className="ml-1 text-sm text-gray-850 font-bold">Chat</span>
+                <RiArrowDropDownLine className="text-3xl text-gray-850 ml-1" />
+              </div>
+              {showAICopilot && (
+                <button
+                  onClick={() => handleOpenAICopilot()}
+                  className="flex items-center text-sm text-indigo-600 hover:text-indigo-700"
+                >
+                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Close AI Copilot
+                </button>
+              )}
+              
             </div>
             
             <form onSubmit={handleSubmit} className="flex items-end gap-4">
@@ -357,7 +395,26 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
                 </button>
               </div>
             </form>
-          </div>
+          </div>        </div>          
+        {/* Selection popup component - Only show when AI Copilot is not open */} 
+        {!showAICopilot && (
+          <AskFinCopilot 
+            onOpenAICopilot={handleOpenAICopilot}
+            setShowQuickQuestion={setShowQuickQuestion}
+            setCopilotQuestion={setCopilotQuestion}
+          />
+        )}        {/* Single AI Copilot Instance */}        
+        <div className={`fixed right-0 top-0 h-full w-[400px] z-[100] transform transition-all duration-300 ease-in-out shadow-xl border-l border-gray-100/50 ${
+            showAICopilot ? 'translate-x-0 opacity-100 backdrop-blur-sm' : 'translate-x-full opacity-0 pointer-events-none'
+          }`}
+        >
+          {showAICopilot && (
+            <AICopilot 
+              onClose={() => handleOpenAICopilot()}
+              setMessageInput={setMessageInput}
+              selectedMessage={copilotQuestion}
+            />
+          )}
         </div>
 
         {/* Add formatting toolbar */}
@@ -368,6 +425,7 @@ export default function ChatPanel({ selectedChat, messageInput, setMessageInput,
             onOptionSelect={handleFormatOption}
           />
         )}
+        
       </div>
     </div>
   );

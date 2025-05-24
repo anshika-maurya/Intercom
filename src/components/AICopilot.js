@@ -5,9 +5,10 @@ import RefundSources from './RefundSources';
 import FormattingToolbar from './FormattingToolbar';
 import { FaIntercom } from "react-icons/fa";
 import { LuPanelRightClose } from "react-icons/lu";
-import { FaTruckPickup } from "react-icons/fa";
+
 import { TfiNewWindow } from "react-icons/tfi";
 import { FcMoneyTransfer } from "react-icons/fc";
+import { debounce } from "lodash";
 
 const NumberedIcon = ({ number, onClick }) => (
   <button 
@@ -17,20 +18,8 @@ const NumberedIcon = ({ number, onClick }) => (
     {number}
   </button>
 );
-const AICopilotBox = ({ messages }) => {
-  return (
-    <div className="bg-gray-50 p-4 border rounded max-w-xl">
-      <h2 className="text-lg font-bold mb-2">AI Copilot</h2>
-      <div className="space-y-2">
-        {messages.map((msg, i) => (
-          <div key={i} className="bg-white p-3 rounded border shadow text-gray-800">
-            {msg}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+
+
 
 const ArticlePopup = ({ title, content, onClose, onAddToComposer }) => {
   return (
@@ -98,14 +87,7 @@ const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
   const [showSuggestedText, setShowSuggestedText] = useState(!selectedMessage);
   const contentRef = useRef(null);
 
-  useEffect(() => {
-    if (selectedMessage) {
-      setSearchQuery(selectedMessage);
-      setShowSuggestedText(false);
-      setShowInitialState(false);
-      handleQuerySubmit();
-    }
-  }, [selectedMessage]);
+  
 
   // New state to control Suggested text visibility
   
@@ -135,18 +117,21 @@ const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
   }, []);
 
   // Handle selected message on mount
-  useEffect(() => {
-    if (selectedMessage) {
-      setShowSuggestedText(false);
-      setSearchQuery(selectedMessage);
-      // Simulate a delay before submitting
-      setTimeout(() => {
-        handleQuerySubmit();
-      }, 100);
-    }
-  }, [selectedMessage]);
+ const debouncedSubmit = debounce(() => {
+  handleQuerySubmit();
+}, 200, { leading: true, trailing: false });
 
-  const articleContents = {
+useEffect(() => {
+  if (selectedMessage) {
+    setShowSuggestedText(false);
+    setSearchQuery(selectedMessage);
+    setShowInitialState(false);
+    debouncedSubmit(); // ✅ Only this is needed
+  }
+}, [selectedMessage]);
+
+
+const articleContents = {
     details: {
       title: "Getting a refund",
       content: "We understand that sometimes a purchase may not meet your expectations, and you may need to request a refund. This guide outlines the simple steps to help you navigate the refund process and ensure a smooth resolution to your concern. Please note: We can only refund orders placed within the last 60 days, and your item must meet our requirements for condition to be returned. Please check when you placed your order before proceeding."
@@ -281,16 +266,22 @@ const AICopilot = ({ onClose, setMessageInput, selectedMessage }) => {
     }, 1000);
   };
   
-  const handleSuggestedQuestion = (question) => {
+let hasSubmitted = false;
+
+const handleSuggestedQuestion = (question) => {
+  if (hasSubmitted) return;
+  hasSubmitted = true;
+
   setSearchQuery(question);
-  setInputPlaceholder("Ask a follow-up question..."); // 👈 update placeholder
-  setShowSuggestedText(false); // 👈 hide suggested message
+  setInputPlaceholder("Ask a follow-up question...");
+  setShowSuggestedText(false);
   if (contentRef.current) contentRef.current.scrollTop = 0;
 
   setTimeout(() => {
     handleQuerySubmit();
   }, 100);
 };
+
 
 
 {showSuggestedText && (
