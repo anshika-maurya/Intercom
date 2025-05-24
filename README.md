@@ -18,11 +18,11 @@
 - [Overview](#-overview)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
 - [Installation](#-installation)
 - [Usage](#-usage)
+- [Live](#-live)
 - [Future Enhancements](#-future-enhancements)
-- [License](#-license)
+
 
 <hr />
 
@@ -56,22 +56,9 @@ The interface includes interactive chat windows, quick reply options, conversati
 
 <hr />
 
-## 📂 Project Structure
 
-chat-support-ui/
-├── public/ # Static files
-├── src/
-│ ├── components/ # Reusable React components (e.g., SourceCard)
-│ ├── assets/ # Images, icons, styles
-│ ├── hooks/ # Custom React hooks (if any)
-│ ├── App.js # Main app component
-│ └── index.js # React DOM render entry
-├── package.json # Project dependencies and scripts
-└── README.md # Project documentation
 
-markdown
-Copy
-Edit
+
 
 <hr />
 
@@ -86,45 +73,44 @@ Edit
 1. **Clone the repository**
    ```bash
    git clone https://github.com/anshika-maurya/Intercom
-   cd chat-support-ui
-Install dependencies
+   cd intercom
+   ```
 
-bash
-Copy
-Edit
-npm install
-# or
-yarn install
-Start the development server
 
-bash
-Copy
-Edit
-npm start
-# or
-yarn start
-Open the app
-Navigate to http://localhost:3000 in your browser.
+2. **Start the application**
+   
+   Start Frontend (in a new terminal):
+   ```bash
+   npm start
+   ```
+
+6. **Access the application**
+   
+   The application will be available at:
+   - Frontend: http://localhost:3000
+   
+<hr />
+
+## 💻 Usage
+
+1. Use the SourceCard component to display chatbot support articles or knowledge base snippets with expandable details.
+
+2. Clicking "Add to composer" can be wired up to send content to a chat input or message composer in your app.
+
+3. The UI is fully responsive and can be customized via Tailwind CSS classes.
 
 <hr />
-💻 Usage
-Use the SourceCard component to display chatbot support articles or knowledge base snippets with expandable details.
 
-Clicking "Add to composer" can be wired up to send content to a chat input or message composer in your app.
+## 🔮 Future Enhancements
+1. Integrate real backend API for chatbot conversations and message persistence.
 
-The UI is fully responsive and can be customized via Tailwind CSS classes.
+2. Add real-time chat features with websockets.
 
-<hr />
-🔮 Future Enhancements
-Integrate real backend API for chatbot conversations and message persistence.
+3. Support multiple chat threads and user profiles.
 
-Add real-time chat features with websockets.
+4. Add localization and accessibility improvements.
 
-Support multiple chat threads and user profiles.
-
-Add localization and accessibility improvements.
-
-Enhance UI animations and transitions.
+5. Enhance UI animations and transitions.
 
 <hr />
 
@@ -136,7 +122,4 @@ The project is deployed and accessible at:
 
 <hr />
 
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-<hr /> <p align="center">Made with ❤️ by Anshika Maurya</p> ```
+<p align="center">Made with ❤️ by Anshika Maurya</p> 
